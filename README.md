@@ -9,7 +9,7 @@ Track workouts, progress and goals — in Dart (Flutter-ready core).
 - [x] Progress tracking + personal records
 - [x] Goals and streaks
 - [x] Export and backup import
-- [ ] Self-review checklist, then public
+- [x] Self-review checklist, then public
 
 ## Workout logging
 
