@@ -9,3 +9,4 @@ export 'src/stats.dart';
 export 'src/file_store.dart';
 export 'src/progress.dart';
 export 'src/goals.dart';
+export 'src/export.dart';
