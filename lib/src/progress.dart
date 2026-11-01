@@ -1,4 +1,3 @@
-import 'workout.dart';
 import 'workout_log.dart';
 
 /// Best-ever marks for one exercise, each with the date it was set.

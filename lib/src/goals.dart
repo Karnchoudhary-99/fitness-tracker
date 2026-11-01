@@ -1,4 +1,3 @@
-import 'workout.dart';
 import 'workout_log.dart';
 
 /// Consecutive days with at least one workout logged.
