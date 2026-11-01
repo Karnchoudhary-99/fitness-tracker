@@ -18,3 +18,4 @@ jobs:
       - run: dart test
       - run: dart example/demo.dart
       - run: dart example/progress_demo.dart
+      - run: dart example/export_demo.dart
