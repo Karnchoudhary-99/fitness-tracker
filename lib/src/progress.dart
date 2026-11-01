@@ -54,8 +54,7 @@ Map<String, PersonalRecord> personalRecords(WorkoutLog log) {
   for (final workout in log.all.reversed) {
     for (final logged in workout.exercises) {
       final name = logged.exercise.name;
-      var current = best[name] ??
-          PersonalRecord(exerciseName: name);
+      var current = best[name] ?? PersonalRecord(exerciseName: name);
       for (final set in logged.sets) {
         if (set.weightKg != null &&
             (current.maxWeightKg == null ||
@@ -184,8 +183,7 @@ class WeeklyVolume {
   final double distanceKm;
 
   @override
-  String toString() =>
-      '${weekStart.toIso8601String().substring(0, 10)}: '
+  String toString() => '${weekStart.toIso8601String().substring(0, 10)}: '
       '$workoutCount workouts, ${volumeKg.toStringAsFixed(0)} kg, '
       '${distanceKm.toStringAsFixed(1)} km';
 }

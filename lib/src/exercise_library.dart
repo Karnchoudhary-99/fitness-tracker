@@ -78,8 +78,7 @@ class ExerciseLibrary {
   List<Exercise> byMuscleGroup(String muscle) {
     final needle = muscle.trim().toLowerCase();
     return all
-        .where((e) =>
-            e.muscleGroups.any((m) => m.toLowerCase() == needle))
+        .where((e) => e.muscleGroups.any((m) => m.toLowerCase() == needle))
         .toList();
   }
 
@@ -92,8 +91,11 @@ class ExerciseLibrary {
     if (findByName(name) != null) {
       throw StateError('An exercise named "$name" already exists');
     }
-    final exercise =
-        Exercise(name: name, category: category, muscleGroups: muscleGroups, isCustom: true);
+    final exercise = Exercise(
+        name: name,
+        category: category,
+        muscleGroups: muscleGroups,
+        isCustom: true);
     _custom.add(exercise);
     return exercise;
   }

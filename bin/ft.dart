@@ -84,8 +84,7 @@ Future<void> _saveGoals(String goalsPath, GoalBook book) async {
   await file.writeAsString(jsonEncode(book.toJson()));
 }
 
-String _fmtDate(DateTime date) =>
-    date.toIso8601String().substring(0, 10);
+String _fmtDate(DateTime date) => date.toIso8601String().substring(0, 10);
 
 void main(List<String> args) async {
   if (args.isEmpty || args.first == 'help') {
@@ -105,8 +104,7 @@ void main(List<String> args) async {
         for (final exercise in library.all) {
           final muscles = exercise.muscleGroups.join(', ');
           final custom = exercise.isCustom ? ' [custom]' : '';
-          stdout.writeln(
-              '- ${exercise.name} (${exercise.category.name})'
+          stdout.writeln('- ${exercise.name} (${exercise.category.name})'
               '${muscles.isEmpty ? '' : ' — $muscles'}$custom');
         }
       case 'add-exercise':
@@ -174,12 +172,14 @@ void main(List<String> args) async {
         }
       case 'summary':
         final log = await store.load();
-        final from = flags['from'] == null ? null : DateTime.parse(flags['from']!);
+        final from =
+            flags['from'] == null ? null : DateTime.parse(flags['from']!);
         final to = flags['to'] == null ? null : DateTime.parse(flags['to']!);
         final summary = summarize(log, start: from, end: to);
         stdout.writeln(summary);
         for (final entry in summary.volumeByExercise.entries) {
-          stdout.writeln('  ${entry.key}: ${entry.value.toStringAsFixed(0)} kg');
+          stdout
+              .writeln('  ${entry.key}: ${entry.value.toStringAsFixed(0)} kg');
         }
       case 'prs':
         final log = await store.load();
@@ -204,9 +204,8 @@ void main(List<String> args) async {
           stdout.writeln('No workouts logged for $name.');
         }
         for (final point in points) {
-          final best = point.maxWeightKg == null
-              ? ''
-              : ', best ${point.maxWeightKg}kg';
+          final best =
+              point.maxWeightKg == null ? '' : ', best ${point.maxWeightKg}kg';
           stdout.writeln(
               '${_fmtDate(point.date)}: ${point.volumeKg.toStringAsFixed(0)} kg, '
               '${point.sets} sets$best');

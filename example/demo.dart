@@ -38,8 +38,7 @@ void main() {
     title: 'Morning run',
     date: DateTime(2026, 10, 30),
     exercises: [
-      LoggedExercise(
-          exercise: run, sets: [WorkoutSet.parse('5km')]),
+      LoggedExercise(exercise: run, sets: [WorkoutSet.parse('5km')]),
     ],
   ));
 

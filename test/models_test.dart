@@ -26,8 +26,8 @@ void main() {
 
   group('Workout', () {
     test('aggregates volume, sets and duration', () {
-      final bench = Exercise(
-          name: 'Bench Press', category: ExerciseCategory.strength);
+      final bench =
+          Exercise(name: 'Bench Press', category: ExerciseCategory.strength);
       final workout = Workout(
         title: 'Push',
         date: DateTime(2026, 11, 1, 18, 30),
@@ -45,12 +45,12 @@ void main() {
     });
 
     test('rejects empty title and empty logged exercises', () {
-      expect(() => Workout(title: ' ', date: DateTime.now()),
-          throwsArgumentError);
-      final bench = Exercise(
-          name: 'Bench Press', category: ExerciseCategory.strength);
-      expect(() => LoggedExercise(exercise: bench, sets: []),
-          throwsArgumentError);
+      expect(
+          () => Workout(title: ' ', date: DateTime.now()), throwsArgumentError);
+      final bench =
+          Exercise(name: 'Bench Press', category: ExerciseCategory.strength);
+      expect(
+          () => LoggedExercise(exercise: bench, sets: []), throwsArgumentError);
     });
   });
 
@@ -78,8 +78,8 @@ void main() {
           date: date,
           exercises: [
             LoggedExercise(
-              exercise: Exercise(
-                  name: 'Squat', category: ExerciseCategory.strength),
+              exercise:
+                  Exercise(name: 'Squat', category: ExerciseCategory.strength),
               sets: [WorkoutSet.parse('5x100')],
             ),
           ],
@@ -91,7 +91,8 @@ void main() {
       log.add(sample('b', DateTime(2026, 10, 28)));
       expect(log.all.first.id, 'b');
       expect(log.onDate(DateTime(2026, 10, 26)).length, 1);
-      expect(log.between(DateTime(2026, 10, 27), DateTime(2026, 10, 29)).length, 1);
+      expect(log.between(DateTime(2026, 10, 27), DateTime(2026, 10, 29)).length,
+          1);
       expect(log.forExercise('squat').length, 2);
       expect(() => log.between(DateTime(2026, 10, 29), DateTime(2026, 10, 26)),
           throwsArgumentError);
@@ -102,8 +103,8 @@ void main() {
       expect(() => log.add(Workout(title: 'Empty', date: DateTime.now())),
           throwsArgumentError);
       log.add(sample('a', DateTime(2026, 10, 26)));
-      expect(() => log.add(sample('a', DateTime(2026, 10, 27))),
-          throwsStateError);
+      expect(
+          () => log.add(sample('a', DateTime(2026, 10, 27))), throwsStateError);
       expect(log.removeById('a'), isTrue);
       expect(log.isEmpty, isTrue);
     });

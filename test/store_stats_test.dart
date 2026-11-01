@@ -10,7 +10,8 @@ Workout _workout(String id, DateTime date, String exercise, String set) =>
       date: date,
       exercises: [
         LoggedExercise(
-          exercise: Exercise(name: exercise, category: ExerciseCategory.strength),
+          exercise:
+              Exercise(name: exercise, category: ExerciseCategory.strength),
           sets: [WorkoutSet.parse(set)],
         ),
       ],

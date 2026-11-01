@@ -71,8 +71,7 @@ void main() {
         title: 'Push once more',
         date: DateTime(2026, 11, 2),
         exercises: [
-          LoggedExercise(
-              exercise: bench, sets: [WorkoutSet.parse('5x90')]),
+          LoggedExercise(exercise: bench, sets: [WorkoutSet.parse('5x90')]),
         ],
       ));
       final record = personalRecords(log)['Bench Press']!;
@@ -100,8 +99,7 @@ void main() {
         title: 'Evening push',
         date: DateTime(2026, 10, 26),
         exercises: [
-          LoggedExercise(
-              exercise: bench, sets: [WorkoutSet.parse('10x60')]),
+          LoggedExercise(exercise: bench, sets: [WorkoutSet.parse('10x60')]),
         ],
       ));
       final points = progressForExercise(log, 'Bench Press');
@@ -175,20 +173,15 @@ void main() {
     test('evaluates weekly goals over the trailing 7 days', () {
       final log = _sampleLog();
       final frequency = Goal(
-          title: 'Train 4x a week',
-          kind: GoalKind.workoutsPerWeek,
-          target: 4);
+          title: 'Train 4x a week', kind: GoalKind.workoutsPerWeek, target: 4);
       final progress =
           evaluateGoal(frequency, log, asOf: DateTime(2026, 10, 30));
       expect(progress.met, isTrue);
       expect(progress.current, 4);
 
       final stretch = Goal(
-          title: 'Train 5x a week',
-          kind: GoalKind.workoutsPerWeek,
-          target: 5);
-      final missed =
-          evaluateGoal(stretch, log, asOf: DateTime(2026, 10, 30));
+          title: 'Train 5x a week', kind: GoalKind.workoutsPerWeek, target: 5);
+      final missed = evaluateGoal(stretch, log, asOf: DateTime(2026, 10, 30));
       expect(missed.met, isFalse);
       expect(missed.fraction, closeTo(0.8, 0.001));
     });
@@ -196,31 +189,22 @@ void main() {
     test('evaluates volume and streak goals', () {
       final log = _sampleLog();
       final volume = Goal(
-          title: '5000 kg a week',
-          kind: GoalKind.weeklyVolumeKg,
-          target: 5000);
+          title: '5000 kg a week', kind: GoalKind.weeklyVolumeKg, target: 5000);
       final volumeProgress =
           evaluateGoal(volume, log, asOf: DateTime(2026, 10, 30));
       expect(volumeProgress.current, 4880);
       expect(volumeProgress.fraction, closeTo(0.976, 0.001));
 
-      final streakGoal = Goal(
-          title: '3-day streak',
-          kind: GoalKind.streakDays,
-          target: 3);
-      expect(
-          evaluateGoal(streakGoal, log, asOf: DateTime(2026, 10, 28)).met,
+      final streakGoal =
+          Goal(title: '3-day streak', kind: GoalKind.streakDays, target: 3);
+      expect(evaluateGoal(streakGoal, log, asOf: DateTime(2026, 10, 28)).met,
           isTrue);
     });
 
     test('rejects non-positive targets and empty titles', () {
-      expect(
-          () => Goal(
-              title: 'x', kind: GoalKind.workoutsPerWeek, target: 0),
+      expect(() => Goal(title: 'x', kind: GoalKind.workoutsPerWeek, target: 0),
           throwsArgumentError);
-      expect(
-          () => Goal(
-              title: ' ', kind: GoalKind.workoutsPerWeek, target: 3),
+      expect(() => Goal(title: ' ', kind: GoalKind.workoutsPerWeek, target: 3),
           throwsArgumentError);
     });
 
