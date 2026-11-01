@@ -8,6 +8,7 @@ Track workouts, progress and goals — in Dart (Flutter-ready core).
 - [x] Workout logging (exercises, sets, reps, duration)
 - [x] Progress tracking + personal records
 - [x] Goals and streaks
+- [x] Export and backup import
 - [ ] Self-review checklist, then public
 
 ## Workout logging
@@ -75,6 +76,27 @@ counting starts from the previous day when today has no workout.
 
 ```sh
 dart example/progress_demo.dart   # PRs, trend, streaks, goals
+```
+
+## Export and backup import
+
+Take your log elsewhere, or back it up and restore it:
+
+```sh
+dart bin/ft.dart export                          # CSV to stdout
+dart bin/ft.dart export --format json --out backup.json
+dart bin/ft.dart import --file backup.json       # skips duplicates
+```
+
+CSV has one row per logged exercise (`date,title,exercise,sets,
+volume_kg,duration_s,distance_km`) and is spreadsheet-ready; the JSON
+backup is the file store's own format, so it restores losslessly.
+Import skips a workout already in the log — by id when it has one,
+otherwise by matching date, title, and exercises — so importing the
+same backup twice is a safe no-op.
+
+```sh
+dart example/export_demo.dart   # CSV + backup + dedup tour
 ```
 
 ## License
