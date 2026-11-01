@@ -24,6 +24,9 @@ Commands:
       weekly-distance-km|streak-days --target N [--data PATH]
   goals [--data PATH]                   List goals with progress
   goal-remove --id ID [--data PATH]
+  export [--format csv|json] [--out PATH] [--data PATH]
+      Export the log (CSV for spreadsheets, JSON backup)
+  import --file PATH [--data PATH]  Import a JSON backup (skips duplicates)
 
 Set specs: 10x100 (10 reps at 100 kg), 10 (bodyweight reps),
            300s (300-second set), 5km (5 km set). Comma-separated.
@@ -265,6 +268,30 @@ void main(List<String> args) async {
           final mark = progress.met ? ' [met]' : '';
           stdout.writeln('${progress.goal.id}: $progress$mark');
         }
+      case 'export':
+        final log = await store.load();
+        final format = flags['format'] ?? 'csv';
+        final text = format == 'json'
+            ? jsonEncode(log.toJson())
+            : format == 'csv'
+                ? exportCsv(log)
+                : throw ArgumentError('Unknown --format "$format" (csv|json)');
+        final out = flags['out'];
+        if (out != null) {
+          final file = File(out);
+          await file.parent.create(recursive: true);
+          await file.writeAsString(text);
+          stdout.writeln('Exported ${log.length} workout(s) to $out');
+        } else {
+          stdout.write(text);
+        }
+      case 'import':
+        final file = File(_require(flags, 'file'));
+        final backup = parseBackup(await file.readAsString());
+        final log = await store.load();
+        final report = mergeLogs(log, backup);
+        await store.save(log);
+        stdout.writeln(report);
       case 'goal-remove':
         final book = await _loadGoals('$dataPath.goals.json');
         final id = _require(flags, 'id');

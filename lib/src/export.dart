@@ -31,9 +31,7 @@ String exportCsv(WorkoutLog log) {
 }
 
 String _csvField(String value) {
-  if (value.contains(',') ||
-      value.contains('"') ||
-      value.contains('\n')) {
+  if (value.contains(',') || value.contains('"') || value.contains('\n')) {
     return '"${value.replaceAll('"', '""')}"';
   }
   return value;
