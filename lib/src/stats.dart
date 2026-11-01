@@ -1,4 +1,3 @@
-import 'workout.dart';
 import 'workout_log.dart';
 
 /// Summary numbers over a set of workouts (optionally a date range).
