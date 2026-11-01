@@ -100,8 +100,7 @@ class LoggedExercise {
   final Exercise exercise;
   final List<WorkoutSet> sets;
 
-  double get volumeKg =>
-      sets.fold(0.0, (sum, set) => sum + set.volumeKg);
+  double get volumeKg => sets.fold(0.0, (sum, set) => sum + set.volumeKg);
 
   int get durationSeconds =>
       sets.fold(0, (sum, set) => sum + (set.durationSeconds ?? 0));
@@ -120,8 +119,7 @@ class LoggedExercise {
       throw const FormatException('Logged exercise needs at least one set');
     }
     return LoggedExercise(
-      exercise:
-          Exercise.fromJson(json['exercise'] as Map<String, Object?>),
+      exercise: Exercise.fromJson(json['exercise'] as Map<String, Object?>),
       sets: setJson
           .map((s) => WorkoutSet.fromJson(s as Map<String, Object?>))
           .toList(),
@@ -151,22 +149,20 @@ class Workout {
 
   bool get isEmpty => exercises.isEmpty;
 
-  int get totalSets =>
-      exercises.fold(0, (sum, e) => sum + e.sets.length);
+  int get totalSets => exercises.fold(0, (sum, e) => sum + e.sets.length);
 
-  double get totalVolumeKg =>
-      exercises.fold(0.0, (sum, e) => sum + e.volumeKg);
+  double get totalVolumeKg => exercises.fold(0.0, (sum, e) => sum + e.volumeKg);
 
   int get totalDurationSeconds =>
       exercises.fold(0, (sum, e) => sum + e.durationSeconds);
 
   double get totalDistanceKm => exercises.fold(
       0.0,
-      (sum, e) => sum +
-          e.sets.fold(0.0, (s, set) => s + (set.distanceKm ?? 0)));
+      (sum, e) =>
+          sum + e.sets.fold(0.0, (s, set) => s + (set.distanceKm ?? 0)));
 
-  Workout addExercise(LoggedExercise logged) =>
-      Workout(title: title, date: date, exercises: [...exercises, logged], id: id);
+  Workout addExercise(LoggedExercise logged) => Workout(
+      title: title, date: date, exercises: [...exercises, logged], id: id);
 
   Map<String, Object?> toJson() => {
         if (id != null) 'id': id,

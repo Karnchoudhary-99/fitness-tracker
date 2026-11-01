@@ -16,6 +16,14 @@ Commands:
       [--date YYYY-MM-DD] [--data PATH]   Log a workout
   list [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--data PATH]
   summary [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--data PATH]
+  prs [--exercise NAME] [--data PATH]  Personal records
+  progress --exercise NAME [--data PATH]
+  trend [--data PATH]                   Weekly volume trend
+  streak [--as-of YYYY-MM-DD] [--data PATH]
+  goal-add --title TITLE --kind workouts-per-week|weekly-volume-kg|
+      weekly-distance-km|streak-days --target N [--data PATH]
+  goals [--data PATH]                   List goals with progress
+  goal-remove --id ID [--data PATH]
 
 Set specs: 10x100 (10 reps at 100 kg), 10 (bodyweight reps),
            300s (300-second set), 5km (5 km set). Comma-separated.
@@ -63,6 +71,21 @@ Future<void> _saveLibrary(String libraryPath, ExerciseLibrary library) async {
   await file.writeAsString(jsonEncode(library.toJson()));
 }
 
+Future<GoalBook> _loadGoals(String goalsPath) async {
+  final file = File(goalsPath);
+  if (!await file.exists()) return GoalBook();
+  final decoded = jsonDecode(await file.readAsString());
+  return GoalBook.fromJson(decoded as Map<String, Object?>);
+}
+
+Future<void> _saveGoals(String goalsPath, GoalBook book) async {
+  final file = File(goalsPath);
+  await file.parent.create(recursive: true);
+  await file.writeAsString(jsonEncode(book.toJson()));
+}
+
+String _fmtDate(DateTime date) => date.toIso8601String().substring(0, 10);
+
 void main(List<String> args) async {
   if (args.isEmpty || args.first == 'help') {
     stdout.write(_usage);
@@ -81,8 +104,7 @@ void main(List<String> args) async {
         for (final exercise in library.all) {
           final muscles = exercise.muscleGroups.join(', ');
           final custom = exercise.isCustom ? ' [custom]' : '';
-          stdout.writeln(
-              '- ${exercise.name} (${exercise.category.name})'
+          stdout.writeln('- ${exercise.name} (${exercise.category.name})'
               '${muscles.isEmpty ? '' : ' — $muscles'}$custom');
         }
       case 'add-exercise':
@@ -150,13 +172,108 @@ void main(List<String> args) async {
         }
       case 'summary':
         final log = await store.load();
-        final from = flags['from'] == null ? null : DateTime.parse(flags['from']!);
+        final from =
+            flags['from'] == null ? null : DateTime.parse(flags['from']!);
         final to = flags['to'] == null ? null : DateTime.parse(flags['to']!);
         final summary = summarize(log, start: from, end: to);
         stdout.writeln(summary);
         for (final entry in summary.volumeByExercise.entries) {
-          stdout.writeln('  ${entry.key}: ${entry.value.toStringAsFixed(0)} kg');
+          stdout
+              .writeln('  ${entry.key}: ${entry.value.toStringAsFixed(0)} kg');
         }
+      case 'prs':
+        final log = await store.load();
+        final records = personalRecords(log);
+        final filter = flags['exercise'];
+        final shown = filter == null
+            ? records.values.toList()
+            : [
+                if (records[filter] != null) records[filter]!,
+              ];
+        if (shown.isEmpty) {
+          stdout.writeln('No personal records yet.');
+        }
+        for (final record in shown) {
+          stdout.writeln(record);
+        }
+      case 'progress':
+        final log = await store.load();
+        final name = _require(flags, 'exercise');
+        final points = progressForExercise(log, name);
+        if (points.isEmpty) {
+          stdout.writeln('No workouts logged for $name.');
+        }
+        for (final point in points) {
+          final best =
+              point.maxWeightKg == null ? '' : ', best ${point.maxWeightKg}kg';
+          stdout.writeln(
+              '${_fmtDate(point.date)}: ${point.volumeKg.toStringAsFixed(0)} kg, '
+              '${point.sets} sets$best');
+        }
+      case 'trend':
+        final log = await store.load();
+        final weeks = weeklyVolumeTrend(log);
+        if (weeks.isEmpty) {
+          stdout.writeln('No workouts logged yet.');
+        }
+        for (final week in weeks) {
+          stdout.writeln(week);
+        }
+      case 'streak':
+        final log = await store.load();
+        final asOf =
+            flags['as-of'] == null ? null : DateTime.parse(flags['as-of']!);
+        final streak = streaks(log, asOf: asOf);
+        stdout.writeln('Streak: $streak');
+      case 'goal-add':
+        final book = await _loadGoals('$dataPath.goals.json');
+        final kindName = _require(flags, 'kind');
+        // Accept kebab-case on the CLI (workouts-per-week) as well as
+        // the enum name (workoutsPerWeek).
+        final kebab = <String, GoalKind>{};
+        for (final k in GoalKind.values) {
+          kebab[k.name.replaceAllMapped(
+              RegExp('[A-Z]'), (m) => '-${m[0]!.toLowerCase()}')] = k;
+          kebab[k.name] = k;
+        }
+        final kind = kebab[kindName];
+        if (kind == null) {
+          throw ArgumentError(
+              'Unknown kind "$kindName" (workouts-per-week|weekly-volume-kg|'
+              'weekly-distance-km|streak-days)');
+        }
+        final target = double.tryParse(_require(flags, 'target'));
+        if (target == null) {
+          throw ArgumentError('--target must be a number');
+        }
+        final goal = Goal(
+          id: 'g-${DateTime.now().millisecondsSinceEpoch}',
+          title: _require(flags, 'title'),
+          kind: kind,
+          target: target,
+        );
+        book.add(goal);
+        await _saveGoals('$dataPath.goals.json', book);
+        stdout.writeln('Added goal: ${goal.title} (${goal.id})');
+      case 'goals':
+        final log = await store.load();
+        final book = await _loadGoals('$dataPath.goals.json');
+        if (book.isEmpty) {
+          stdout.writeln('No goals yet — add one with goal-add.');
+        }
+        for (final progress in book.evaluateAll(log)) {
+          final mark = progress.met ? ' [met]' : '';
+          stdout.writeln('${progress.goal.id}: $progress$mark');
+        }
+      case 'goal-remove':
+        final book = await _loadGoals('$dataPath.goals.json');
+        final id = _require(flags, 'id');
+        if (!book.removeById(id)) {
+          stderr.writeln('No goal with id $id');
+          exit(1);
+        }
+        await _saveGoals('$dataPath.goals.json', book);
+        stdout.writeln('Removed goal $id');
       default:
         stderr.writeln('Unknown command: $command');
         stderr.writeln(_usage);

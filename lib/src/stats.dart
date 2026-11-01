@@ -28,16 +28,14 @@ class WorkoutSummary {
   }
 
   @override
-  String toString() =>
-      '$workoutCount workouts, $totalSets sets, '
+  String toString() => '$workoutCount workouts, $totalSets sets, '
       '${totalVolumeKg.toStringAsFixed(0)} kg volume, $formattedDuration';
 }
 
 /// Aggregate [log] (or the workouts in [start]..[end]) into a summary.
 WorkoutSummary summarize(WorkoutLog log, {DateTime? start, DateTime? end}) {
-  final workouts = (start != null && end != null)
-      ? log.between(start, end)
-      : log.all;
+  final workouts =
+      (start != null && end != null) ? log.between(start, end) : log.all;
   final volumeByExercise = <String, double>{};
   var sets = 0;
   var volume = 0.0;

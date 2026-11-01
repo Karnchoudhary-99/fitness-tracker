@@ -19,8 +19,7 @@ class WorkoutLog {
     if (workout.isEmpty) {
       throw ArgumentError('Cannot log an empty workout (no exercises)');
     }
-    if (workout.id != null &&
-        _workouts.any((w) => w.id == workout.id)) {
+    if (workout.id != null && _workouts.any((w) => w.id == workout.id)) {
       throw StateError('A workout with id ${workout.id} already exists');
     }
     _workouts.add(workout);
@@ -63,8 +62,8 @@ class WorkoutLog {
   List<Workout> forExercise(String exerciseName) {
     final needle = exerciseName.trim().toLowerCase();
     return _workouts
-        .where((w) => w.exercises.any(
-            (e) => e.exercise.name.toLowerCase() == needle))
+        .where((w) =>
+            w.exercises.any((e) => e.exercise.name.toLowerCase() == needle))
         .toList();
   }
 
