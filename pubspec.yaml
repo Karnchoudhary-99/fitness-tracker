@@ -1,0 +1,10 @@
+name: fitness_tracker
+description: Track workouts, progress and goals — a Flutter-ready Dart core with a CLI.
+version: 0.1.0
+repository: https://github.com/Karnchoudhary-99/fitness-tracker
+
+environment:
+  sdk: ^3.0.0
+
+dev_dependencies:
+  test: ^1.25.0
