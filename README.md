@@ -6,8 +6,8 @@ Track workouts, progress and goals — in Dart (Flutter-ready core).
 
 - [x] Project scaffold (README roadmap, license, gitignore)
 - [x] Workout logging (exercises, sets, reps, duration)
-- [ ] Progress tracking + personal records
-- [ ] Goals and streaks
+- [x] Progress tracking + personal records
+- [x] Goals and streaks
 - [ ] Self-review checklist, then public
 
 ## Workout logging
@@ -37,7 +37,44 @@ Run the sample week demo and the tests:
 
 ```sh
 dart example/demo.dart   # 3 workouts, 4180 kg volume, 5 km
-dart test                # 11 tests
+dart test                # 26 tests
+```
+
+## Progress tracking, goals and streaks
+
+Personal records, per-exercise progress and weekly trends are
+computed from the same log — no extra bookkeeping:
+
+```sh
+dart bin/ft.dart prs
+dart bin/ft.dart prs --exercise "Bench Press"
+dart bin/ft.dart progress --exercise "Bench Press"
+dart bin/ft.dart trend
+dart bin/ft.dart streak
+```
+
+Personal records track the best weight, reps, distance and
+duration per exercise, with the date each mark was set (the
+earliest date wins a tie). `trend` aggregates Monday-start weeks
+and fills empty weeks with zeros so gaps stay visible.
+
+Goals measure workouts-per-week, weekly volume, weekly distance
+or streak days, evaluated over the trailing 7 days (streak goals
+use the current streak). A goal is met at 100%:
+
+```sh
+dart bin/ft.dart goal-add --title "Train 3x a week" \
+  --kind workouts-per-week --target 3
+dart bin/ft.dart goals
+dart bin/ft.dart goal-remove --id <id>
+```
+
+Goals persist in a versioned JSON sidecar next to the workout
+file. A not-yet-trained today does not break the current streak:
+counting starts from the previous day when today has no workout.
+
+```sh
+dart example/progress_demo.dart   # PRs, trend, streaks, goals
 ```
 
 ## License
